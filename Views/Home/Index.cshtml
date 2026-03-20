@@ -1,0 +1,20 @@
+﻿@model System.Data.DataTable
+
+<h2>🕊️ Homenajes</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+else
+{
+    @foreach (System.Data.DataRow row in Model.Rows)
+    {
+        <div style="border:1px solid #ccc; padding:15px; margin-bottom:10px;">
+            <h3>@row["NOMBRE_EXTINTO"] @row["APELLIDO_EXTINTO"]</h3>
+            <p>📅 Falleció: @row["FECHA_FALLECIMIENTO"]</p>
+            <p>👤 Edad: @row["EDAD"]</p>
+            <p>💬 Comentario: @row["COMENTARIO_FALLECIMIENTO"]</p>
+        </div>
+    }
+}

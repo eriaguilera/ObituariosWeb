@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f5f5f5;
+}
+
+h1 {
+    color: #583fd4;
+}
+
+#filtros input {
+    margin-right: 10px;
+    padding: 5px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #583fd4;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
