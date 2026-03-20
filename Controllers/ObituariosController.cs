@@ -16,26 +16,43 @@ namespace ObituariosWeb.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+public IActionResult Get()
+{
+    var enRender = Environment.GetEnvironmentVariable("RENDER");
+
+    if (!string.IsNullOrEmpty(enRender))
+    {
+        return Ok(new
         {
-            var tabla = _firebirdService.ObtenerHomenajes();
+            mensaje = "API funcionando en Render 🚀",
+            data = new[]
+            {
+                new {
+                    fallecido = "Juan Pérez",
+                    fecha = "2026-03-20"
+                }
+            }
+        });
+    }
 
-            var lista = tabla.AsEnumerable()
-                .Select(row => new
-                {
-                    servicioId = row["COD_SERVICIO_SEPELIO"],
-                    establecimiento = row["ESTABLECIMIENTO"],
-                    sala = row["SALA"],
-                    fallecido = row["FALLECIDO"],
-                    dni = row["DNI"],
-                    fechaFallecimiento = row["FECHA_FALLECIMIENTO"],
-                    inicioServicio = row["INICIO_SERVICIO"],
-                    photo = "https://via.placeholder.com/150",
-                    summary = "Siempre te recordaremos con cariño."
-                })
-                .ToList();
+    var tabla = _firebirdService.ObtenerHomenajes();
 
-            return Ok(lista);
-        }
+    var lista = tabla.AsEnumerable()
+        .Select(row => new
+        {
+            servicioId = row["COD_SERVICIO_SEPELIO"],
+            establecimiento = row["ESTABLECIMIENTO"],
+            sala = row["SALA"],
+            fallecido = row["FALLECIDO"],
+            dni = row["DNI"],
+            fechaFallecimiento = row["FECHA_FALLECIMIENTO"],
+            inicioServicio = row["INICIO_SERVICIO"],
+            photo = "https://via.placeholder.com/150",
+            summary = "Siempre te recordaremos con cariño."
+        })
+        .ToList();
+
+    return Ok(lista);
+}
     }
 }
