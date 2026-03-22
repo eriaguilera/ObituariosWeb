@@ -15,16 +15,36 @@ namespace ObituariosWeb.Controllers
             _firebirdService = firebirdService;
         }
 
-        [HttpGet]
+     [HttpGet]
 public IActionResult Get()
 {
-    var enRender = Environment.GetEnvironmentVariable("RENDER");
+    try
+    {
+        var tabla = _firebirdService.ObtenerHomenajes();
 
-    if (!string.IsNullOrEmpty(enRender))
+        var lista = tabla.AsEnumerable()
+            .Select(row => new
+            {
+                servicioId = row["COD_SERVICIO_SEPELIO"],
+                establecimiento = row["ESTABLECIMIENTO"],
+                sala = row["SALA"],
+                fallecido = row["FALLECIDO"],
+                dni = row["DNI"],
+                fechaFallecimiento = row["FECHA_FALLECIMIENTO"],
+                inicioServicio = row["INICIO_SERVICIO"],
+                photo = "https://via.placeholder.com/150",
+                summary = "Siempre te recordaremos con cariño."
+            })
+            .ToList();
+
+        return Ok(lista);
+    }
+    catch (Exception ex)
     {
         return Ok(new
         {
-            mensaje = "API funcionando en Render 🚀",
+            mensaje = "Modo demo (sin conexión a DB)",
+            error = ex.Message,
             data = new[]
             {
                 new {
@@ -34,25 +54,6 @@ public IActionResult Get()
             }
         });
     }
-
-    var tabla = _firebirdService.ObtenerHomenajes();
-
-    var lista = tabla.AsEnumerable()
-        .Select(row => new
-        {
-            servicioId = row["COD_SERVICIO_SEPELIO"],
-            establecimiento = row["ESTABLECIMIENTO"],
-            sala = row["SALA"],
-            fallecido = row["FALLECIDO"],
-            dni = row["DNI"],
-            fechaFallecimiento = row["FECHA_FALLECIMIENTO"],
-            inicioServicio = row["INICIO_SERVICIO"],
-            photo = "https://via.placeholder.com/150",
-            summary = "Siempre te recordaremos con cariño."
-        })
-        .ToList();
-
-    return Ok(lista);
+}
 }
     }
-}
