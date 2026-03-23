@@ -29,10 +29,14 @@ async function cargarObituarios() {
         if (!response.ok) throw new Error('Error al llamar a la API');
 
         obituarios = await response.json();
+
+        console.log("DATOS:", obituarios); // 👈 DEBUG
+
         mostrarObituarios();
     } catch (error) {
         console.error(error);
-        document.getElementById('obituarios-container').innerHTML = '❌ No se pudieron cargar los datos.';
+        document.getElementById('obituarios-container').innerHTML =
+            '❌ No se pudieron cargar los datos (revisar CORS o API)';
     }
 }
 
@@ -40,10 +44,10 @@ function mostrarObituarios() {
     const container = document.getElementById('obituarios-container');
     container.innerHTML = '';
 
-    const filtro = document.getElementById('buscarNombre').value.toLowerCase();
+    const nombreFiltro = document.getElementById('buscarNombre').value.toLowerCase();
 
     let filtrados = obituarios.filter(o => 
-        o.fallecido.toLowerCase().includes(filtro)
+        (o.fallecido || "").toLowerCase().includes(nombreFiltro)
     );
 
     const inicio = (pagina - 1) * porPagina;
@@ -52,16 +56,17 @@ function mostrarObituarios() {
 
     paginaActual.forEach(o => {
         const div = document.createElement('div');
+        div.className = 'card';
         div.style.border = "1px solid #ccc";
         div.style.padding = "15px";
         div.style.marginBottom = "10px";
 
         div.innerHTML = `
-            <h3>${o.fallecido}</h3>
-            <p>📅 Falleció: ${o.fechaFallecimiento}</p>
-            <p>👤 DNI: ${o.dni}</p>
-            <p>🏢 Sala: ${o.sala}</p>
-            <p>📍 Establecimiento: ${o.establecimiento}</p>
+            <h2>${o.fallecido || "Sin nombre"}</h2>
+            <p>📅 Fecha fallecimiento: ${o.fechaFallecimiento || ""}</p>
+            <p>👤 DNI: ${o.dni || ""}</p>
+            <p>🏢 Sala: ${o.sala || ""}</p>
+            <p>📍 Establecimiento: ${o.establecimiento || ""}</p>
         `;
 
         container.appendChild(div);

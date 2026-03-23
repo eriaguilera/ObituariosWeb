@@ -2,29 +2,33 @@ using ObituariosWeb;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔥 CORS (IMPORTANTE)
+// 👇 IMPORTANTE
+builder.Services.AddControllersWithViews();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
-        policy => policy
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
 });
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<FirebirdService>();
 
 var app = builder.Build();
 
-// 🔥 ACTIVAR CORS (ANTES DE MAPCONTROLLERS)
-app.UseCors("AllowAll");
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors("AllowAll");
+
 app.UseAuthorization();
 
-app.MapControllers();
+// 🔥 ESTO ES LO QUE TE FALTA
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

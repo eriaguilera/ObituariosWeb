@@ -5,7 +5,7 @@ function mostrarObituarios() {
     const nombreFiltro = document.getElementById('buscarNombre').value.toLowerCase();
 
     let filtrados = obituarios.filter(o => 
-        o.fallecido.toLowerCase().includes(nombreFiltro)
+        (o.fallecido || "").toLowerCase().includes(nombreFiltro)
     );
 
     const inicio = (pagina - 1) * porPagina;
@@ -15,13 +15,15 @@ function mostrarObituarios() {
     paginaActual.forEach(o => {
         const div = document.createElement('div');
         div.className = 'card';
+
         div.innerHTML = `
-            <h2>${o.fallecido}</h2>
-            <p>Fecha fallecimiento: ${o.fechaFallecimiento}</p>
-            <p>DNI: ${o.dni}</p>
-            <p>Sala: ${o.sala}</p>
-            <p>Establecimiento: ${o.establecimiento}</p>
+            <h2>${o.fallecido || "Sin nombre"}</h2>
+            <p>Fecha fallecimiento: ${o.fechaFallecimiento || ""}</p>
+            <p>DNI: ${o.dni || ""}</p>
+            <p>Sala: ${o.sala || ""}</p>
+            <p>Establecimiento: ${o.establecimiento || ""}</p>
         `;
+
         container.appendChild(div);
     });
 
