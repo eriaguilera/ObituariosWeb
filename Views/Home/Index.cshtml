@@ -1,20 +1,91 @@
-﻿@model System.Data.DataTable
+﻿@{
+    ViewData["Title"] = "Obituarios";
+}
 
 <h2>🕊️ Homenajes</h2>
 
-@if (ViewBag.Error != null)
-{
-    <p style="color:red">@ViewBag.Error</p>
-}
-else
-{
-    @foreach (System.Data.DataRow row in Model.Rows)
-    {
-        <div style="border:1px solid #ccc; padding:15px; margin-bottom:10px;">
-            <h3>@row["NOMBRE_EXTINTO"] @row["APELLIDO_EXTINTO"]</h3>
-            <p>📅 Falleció: @row["FECHA_FALLECIMIENTO"]</p>
-            <p>👤 Edad: @row["EDAD"]</p>
-            <p>💬 Comentario: @row["COMENTARIO_FALLECIMIENTO"]</p>
-        </div>
+<div style="margin-bottom:15px;">
+    <input type="text" id="buscarNombre" placeholder="Buscar fallecido..." class="form-control" />
+</div>
+
+<div id="obituarios-container"></div>
+
+<div style="margin-top:15px;">
+    <button id="prev" class="btn btn-secondary">Anterior</button>
+    <span id="pagina-actual">1</span>
+    <button id="next" class="btn btn-secondary">Siguiente</button>
+</div>
+
+<script>
+const apiUrl = 'https://obituariosweb-2.onrender.com/api/obituarios';
+
+let obituarios = [];
+let pagina = 1;
+const porPagina = 5;
+
+async function cargarObituarios() {
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Error al llamar a la API');
+
+        obituarios = await response.json();
+        mostrarObituarios();
+    } catch (error) {
+        console.error(error);
+        document.getElementById('obituarios-container').innerHTML = '❌ No se pudieron cargar los datos.';
     }
 }
+
+function mostrarObituarios() {
+    const container = document.getElementById('obituarios-container');
+    container.innerHTML = '';
+
+    const filtro = document.getElementById('buscarNombre').value.toLowerCase();
+
+    let filtrados = obituarios.filter(o => 
+        o.fallecido.toLowerCase().includes(filtro)
+    );
+
+    const inicio = (pagina - 1) * porPagina;
+    const fin = inicio + porPagina;
+    const paginaActual = filtrados.slice(inicio, fin);
+
+    paginaActual.forEach(o => {
+        const div = document.createElement('div');
+        div.style.border = "1px solid #ccc";
+        div.style.padding = "15px";
+        div.style.marginBottom = "10px";
+
+        div.innerHTML = `
+            <h3>${o.fallecido}</h3>
+            <p>📅 Falleció: ${o.fechaFallecimiento}</p>
+            <p>👤 DNI: ${o.dni}</p>
+            <p>🏢 Sala: ${o.sala}</p>
+            <p>📍 Establecimiento: ${o.establecimiento}</p>
+        `;
+
+        container.appendChild(div);
+    });
+
+    document.getElementById('pagina-actual').textContent = pagina;
+}
+
+document.getElementById('buscarNombre').addEventListener('input', () => {
+    pagina = 1;
+    mostrarObituarios();
+});
+
+document.getElementById('prev').addEventListener('click', () => {
+    if (pagina > 1) {
+        pagina--;
+        mostrarObituarios();
+    }
+});
+
+document.getElementById('next').addEventListener('click', () => {
+    pagina++;
+    mostrarObituarios();
+});
+
+cargarObituarios();
+</script>
